@@ -1,0 +1,38 @@
+% Chapter 1
+
+\chapter{Background Information} % Main chapter title
+
+\label{chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1}
+
+
+\section{Importance of Respiratory Indicators in ICU Studies}
+
+Allocation of resources to critical care patients to minimize mortality is a priority for healthcare professionals. As such, the search for connections between various physiological indicators and unfavourable outcomes such as extreme illnesses or even mortality is a constant priority for researchers. This type of research is especially important in the area of healthcare we have chosen to focus on - critical care. A critical care specialist focuses is on the most vulnerable and urgent patients who are placed in an Intensive Care Unit (ICU). There, the specialist keeps track of various physiological indicators to diagnose and treat the patient to maximize their survival. One such important physiological indicator indicator is the  \PF(PF ratio), which is used to monitor the patient's pulmonary functions. The numerator, \Pa refers to the partial pressure of oxygen in arterial blood and is measured in mmHg via drawing a sample of blood from an artery in the wrist or groin, and testing it in the laboratory. The denominator, \Fi refers to the initial fraction of inspired oxygen and is approximately 21\% in breathable atmosphere and can be controlled with the use of mechanical ventilation. The PF ratio is notably used in the diagnosis of extreme illnesses such as Acute Respiratory Distress Syndrome (ARDS) and has been shown to be predictor of mortality in specific subsets of patients such as newborns with Meconium aspiration syndrome (MAS)  \citep{narayanan2019pao2}.
+
+However, there are challenges associated with measurement of \Pa  \\ specifically. Most importantly, the procedure is invasive and is therefore not easy to measure for all patients and to track at frequent intervals. A more convenient biomarker to measure however is \Sp  or peripheral capillary oxygen saturation, an estimate of\\
+ the amount of oxygen in the blood. It is measured using pulse oximetry, a noninvasive method for monitoring a person's oxygen saturation. Moreover, \SF (SF ratio) has been shown to be a non-invasive surrogate for \PF to diagnose subsets of patients such as children with ALI or ARDS \citep{rice2007comparison} and children with smoke inhalation injury \citep{cambiaso2017correlation}. 
+
+A retrospective study found that the SpO\textsubscript{2}/\Fi Time-at-Risk (SF-TAR), defined as the total time spent with severe hypoxemia (SF ratio $\leq 145$), is not only significantly correlated with hospital mortality for mechanically ventilated patients, but is as well or a better predictor of it than arterial gas-derived measurements of the PF ratio. 
+
+Moreover, there have been several studies that aim to link \Sp to mortality. In 2015, the Tromsø study concluded that an \Sp $\leq95\%$ is associated by all-cause mortality and mortality caused by pulmonary diseases (over a 10-year follow-up period) after adjusting for sex, age, history of smoking, self-reported diseases and respiratory symptoms, BMI, and CRP concentration. When Forced Expiratory Volume (FEV1) was included as a covariate, the correlation remained significant for mortality due to pulmonary diseases but no longer significant for all-cause mortality \citep{vold2015low}. 
+
+However, a prospectively planned meta-analysis  participant data from 5 randomized clinical trials (conducted from 2005-2014) of infants born before 28 weeks' gestation period found no significant difference between a lower \Sp target range (85\%-89\%) and a higher \Sp target range (91\%-95\%) on mortality or major disability at a corrected age of 18 to 24 months \citep{askie2018association}. Therefore, it seems that the use of \Sp as a predictor of mortality might not be applicable to all patient phenotypes, with potential for further sub-phenotyping. Such differences between the subpopulation might also be expected for the SF ratio which includes \Sp. 
+
+
+\section{Aim and Objectives} 
+
+The main goal of this Capstone can be summarized in the following statement: \\
+\textit{ Investigate whether \SF is a statistically significant predictor of mortality in general ICU patient population or subsets thereof using a retrospective analysis of data.
+}
+
+The use of \SF instead of only \Sp allows us to account for the different levels of mechanical ventilation that an ICU patient receives. In essence, it allows us to account for the patient's ability to convert inspired oxygen to peripheral oxygen saturation at the tissue level. 
+
+
+\section{Data}
+
+For this capstone I will be using \textbf{MIMIC III}, an openly available relational database developed by the MIT Lab for Computational Physiology. It contains de-identified data of 61,532 intensive care unit stays: 53,432 stays for adult patients and 8,100 for neonatal patients at the Beth Israel Deaconess Medical Center over the June 2001 - October 2012. It includes demographics, vital signs, laboratory tests, medications, mortality, etc. The database is divided into different tables of data that contain information about a patient's stay and are linked to each via identifiers such as a unique hospital admission ID and a unique patient ID. 
+
+
+
+
+

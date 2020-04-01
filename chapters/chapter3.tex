@@ -1,53 +1,28 @@
 % Chapter Template
 
-\chapter{Methods: How to model ICU mortality?} % Main chapter title
+\chapter{Methods: How to model effect of Biomarkers on ICU mortality?} % Main chapter title
 
-\label{Chapter2} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
+\label{Chapter3} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
-%----------------------------------------------------------------------------------------
-%	SECTION 1
-%----------------------------------------------------------------------------------------
+\section{Analysis Goal}
+
+To reiterate our goal, we not only want to test the significance of the correlation between SF ratio and patient outcome , we also, perhaps more importantly, want to examine over what ranges of SF ratio does significance hold if present. Moreover, if we do find a significant correlation, we want to examine whether such a relationship between SF ratio and patient outcome holds for various subsets of the population. Therefore, we need to find a method of modelling that allows us to examine for more than mere significance of the biomarker. 
+
+\section{The Problem with Generalized Linear Models: They're Linear}
+
+When we think of binary response variables such as mortality, we intuitively think of a linear logistic regression. The linear logistic regression  model belongs to a family of models called Generalized Linear Models (GLM). The word 'Linear' in the name does not stand for the relationship between the response variable and the predictor being a straight line, but rather to the fact that the predictor or a function of is is a modelled by a \textbf{linear} combination of the covariates. The general form of a GLM with $m$ covariates is: 
+
+\begin{equation*}
+g[\mathrm{E}(Y)]=\beta_{0}+\beta_{1} x_{1}+\ldots+\beta_{m} x_{m}
+\end{equation*}
+
+where $g$ is called the link function linking the expected value of $Y$ with a linear combination of the covariates, $
+\beta_{0}+\beta_{1} x_{1}+\ldots+\beta_{m} x_{m}$ \citep{wood2017generalized}. That is, the model only allows for the response variable to be connected to the covariates in a linear manner. Since our goal is to explore an unknown relationship between mortality and SF ratio, we cannot introduce bias into our modelling by assuming this linear relationship. 
+
 
 \section{General Additive Models}
 
 \section{G-Computation}
 
-\section{Pre-Analysis Data Preparation}
 
-The pre-analysis data preparation involved extraction of data from different tables, combining them and calculating the SF ratio. The following subsections  describe these processes. 
 
-\subsection{Data Extraction}
-
-For the patient and stay identifiers I extract SUBJECT\_ID, HADM\_ID from \texttt{ADMISSIONS} table and ICUSTAY\_ID from \texttt{ICUSTAYS} table. From the \texttt{ADMISSIONS} table I extract the time of death of the patient if applicable and if it lies between the ICU admission time and ICU discharge time in \texttt{ICUSTAYS} table I indicate ICU mortality. Similarly if the time of death is between admission time and discharge time in the  \texttt{ADMISSIONS} table, I indicate Hospital mortality. From the \texttt{Patients} table I extract the gender of the patients' and calculate their age.   
-
-For all patients and ICU stays I extract the \Fi values and their chart times from the \texttt{CHARTEVENTS} table. Keeping in mind that at normal atmospheric conditions, \Fi is around 21\%, I apply the following transformations. For the values between 0 and 1, I convert them to percentages by multiplying by a 100 and only keep those between 21\% and 100\%. Next, if the reading is recorded as greater than 1 but lower than 21,  the value is likely to be erroneous and I discard it. Next, if the value is between 21 and 100, the value is likely to already be a percentage and I take it as such. Finally, I discard all the values above a 100 that are remaining. From the same \texttt{CHARTEVENTS} table I extract the patients' height and weight. 
-
-From the \texttt{CHARTEVENTS} table, I also extract \Sp values and chart times but I only keep those which indicate 0 for ERROR which stands for error in measurement.  Moreover, I filter the values and I discard those below 10 and above a 100 since they are either physiologically impossible or unlikely. 
-
-At the end of this stage, the current dataset accounts for 46,476 Patients, 61,532 ICU Stays with 12,713,362 observations of either \Sp or \Fi or both. On further examination of the data, I find that for every \Fi measurement for a given ICU stay, for a given unique patient, there is a corresponding \Sp measurement at the same chart time but not vice versa. Accordingly, I restrict my data to only those chart times with both \Sp and \Fi measurements. This further subsets the number of observations further into 703,201 observations. 
-
-%\subsection{Dealing with duplicate \Sp values}
-%
-%On examination of the data I find that for 63,563 of the 703,201 observations (approx. 9\% of all obervations) there exists another \Sp measurement with the same ICUSTAY\_ID and chart time. To deal with this, I decided to remove any of these observations in which the two \Sp values differed by 5 or more (percentage scale) and took the average of the two values for the remainder of the observations.  At the end of this stage, I have data for 16,113 Patients, 17,737 ICU Stays with 636,203 observations with both \Sp and \Fi values. I then calculate the SF ratio as  $ \Sp / \Fi \times 100 $.
-
-%%-----------------------------------
-%%	SUBSECTION 1
-%%-----------------------------------
-%\subsection{Subsection 1}
-%
-%Nunc posuere quam at lectus tristique eu ultrices augue venenatis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam erat volutpat. Vivamus sodales tortor eget quam adipiscing in vulputate ante ullamcorper. Sed eros ante, lacinia et sollicitudin et, aliquam sit amet augue. In hac habitasse platea dictumst.
-%
-%%-----------------------------------
-%%	SUBSECTION 2
-%%-----------------------------------
-%
-%\subsection{Subsection 2}
-%Morbi rutrum odio eget arcu adipiscing sodales. Aenean et purus a est pulvinar pellentesque. Cras in elit neque, quis varius elit. Phasellus fringilla, nibh eu tempus venenatis, dolor elit posuere quam, quis adipiscing urna leo nec orci. Sed nec nulla auctor odio aliquet consequat. Ut nec nulla in ante ullamcorper aliquam at sed dolor. Phasellus fermentum magna in augue gravida cursus. Cras sed pretium lorem. Pellentesque eget ornare odio. Proin accumsan, massa viverra cursus pharetra, ipsum nisi lobortis velit, a malesuada dolor lorem eu neque.
-%
-%%----------------------------------------------------------------------------------------
-%%	SECTION 2
-%%----------------------------------------------------------------------------------------
-%
-%\section{Main Section 2}
-%
-%Sed ullamcorper quam eu nisl interdum at interdum enim egestas. Aliquam placerat justo sed lectus lobortis ut porta nisl porttitor. Vestibulum mi dolor, lacinia molestie gravida at, tempus vitae ligula. Donec eget quam sapien, in viverra eros. Donec pellentesque justo a massa fringilla non vestibulum metus vestibulum. Vestibulum in orci quis felis tempor lacinia. Vivamus ornare ultrices facilisis. Ut hendrerit volutpat vulputate. Morbi condimentum venenatis augue, id porta ipsum vulputate in. Curabitur luctus tempus justo. Vestibulum risus lectus, adipiscing nec condimentum quis, condimentum nec nisl. Aliquam dictum sagittis velit sed iaculis. Morbi tristique augue sit amet nulla pulvinar id facilisis ligula mollis. Nam elit libero, tincidunt ut aliquam at, molestie in quam. Aenean rhoncus vehicula hendrerit.

@@ -6,23 +6,72 @@
 
 \section{Analysis Goal}
 
-To reiterate our goal, we not only want to test the significance of the correlation between SF ratio and patient outcome , we also, perhaps more importantly, want to examine over what ranges of SF ratio does significance hold if present. Moreover, if we do find a significant correlation, we want to examine whether such a relationship between SF ratio and patient outcome holds for various subsets of the population. Therefore, we need to find a method of modelling that allows us to examine for more than mere significance of the biomarker. 
+To reiterate our goal, we first want to test for a correlation between SF ratio and patient outcome for the general ICU population and subsets of it. Next and perhaps more importantly, we want to examine over what ranges of SF ratio does significance hold if present. Therefore, we need to find a method of modelling that allows us to examine for more than mere significance of the biomarker. 
 
 \section{The Problem with Generalized Linear Models: They're Linear}
 
-When we think of binary response variables such as mortality, we intuitively think of a linear logistic regression. The linear logistic regression  model belongs to a family of models called Generalized Linear Models (GLM). The word 'Linear' in the name does not stand for the relationship between the response variable and the predictor being a straight line, but rather to the fact that the predictor or a function of is is a modelled by a \textbf{linear} combination of the covariates. The general form of a GLM with $m$ covariates is: 
+When we think of binary response variables such as mortality, we intuitively think of a linear logistic regression model. It belongs to a family of models called Generalized Linear Models (GLM). The word 'Linear' in the name does not stand for the relationship between the response variable and the predictor being a straight line, but rather to the fact that the predictor or a function of is modelled by a linear combination of the covariates. The general form of a GLM with $m$ covariates is: 
 
 \begin{equation*}
 g[\mathrm{E}(Y)]=\beta_{0}+\beta_{1} x_{1}+\ldots+\beta_{m} x_{m}
 \end{equation*}
 
-where $g$ is called the link function linking the expected value of $Y$ with a linear combination of the covariates, $
+where $g$ is called the link function linking the expected value of response variable, $Y$ with a linear combination of the covariates, $
 \beta_{0}+\beta_{1} x_{1}+\ldots+\beta_{m} x_{m}$ \citep{wood2017generalized}. That is, the model only allows for the response variable to be connected to the covariates in a linear manner. Since our goal is to explore an unknown relationship between mortality and SF ratio, we cannot introduce bias into our modelling by assuming this linear relationship. 
 
+\section{Generalized Additive Models}
 
-\section{General Additive Models}
+\subsection{Overview}
+Another family of models that allows us to explore a potentially non-linear relationship is the family of Generalized Additive Models (GAM). A GAM is an extension of a generalized linear model; it also involves a linear combination, but allows for smoothing functions applied to the covariates \citep{hastie2017generalized}. A general structure for a GAM can be: 
+\setlength\abovedisplayskip{4pt}
+\setlength\belowdisplayskip{4pt}
+\begin{equation*}
+g\left(\mu_{i}\right)=\mathbf{A}_{i} \boldsymbol{\theta}+f_{1}\left(x_{1 i}\right)+f_{2}\left(x_{2 i}\right)+f_{3}\left(x_{3 i}, x_{4 i}\right)+\ldots
+\end{equation*}
 
-\section{G-Computation}
+where $\mu_{i} = \mathop{\mathbb{E}}(Y_i)$  and $Y_i$ is a response variable that belongs to an exponential family distribution with mean $\mu_{i}$. $\mathbf{A}_{i}$ is a row of the model matrix for any model components that are strictly parametric, and $\boldsymbol{\theta}$ is the parameter vector of those components. Functions $f_1, f_2, f_3, \ldots$ are smoothing functions for covariates $x_1, x_2, x_3, \ldots$  \citep{wood2017generalized}. 
+
+\subsection{Addition Requirements for Using GAM}
+
+The use of smoothing functions comes with the need to specify two additional model properties - how to represent the smooth functions and how to control the smoothing. 
+
+The representation of the smoothing function can be done by choosing a basis that defines the space of functions that our smoothing functions belongs to. In general, a function $f(x)$ can be represented as the summation of a basis functions $b_{j}(x)$ as follows: 
+
+$$
+f(x)=\sum_{j=1}^{k} b_{j}(x) \beta_{j}
+$$
+
+where $\beta_{j}$ are unknown parameters  \citep{wood2017generalized}. There are various choices for the basis of a smoothing function and the, the choice defines how the smoothing takes place. A more in depth discussion on the choice of bases and their shortcomings can be found in \citetitle{wood2017generalized}. 
+
+The second requirement we need to specify is the degree of smoothing. We don't want to overfit or underfit the data, but adequately represent the true underlying relationship between the response variable and covariates. To do this, we add a penalty term to the 
+to the least squares fitting function. That is, instead of minimizing 
+
+$$
+\|\mathbf{y}-\mathbf{X} \boldsymbol{\beta}\|^{2},
+$$
+
+
+where $\mathbf{y}$ is our response variable vector, $\mathbf{X}$ is our covariate vector and $\boldsymbol{\beta}$ is our vector of coefficients, we minimize, 
+
+$$
+\|\mathbf{y}-\mathbf{X} \boldsymbol{\beta}\|^{2} + \lambda \int f''(x)^2 dx 
+$$
+
+where $\lambda$ is the smoothing parameter chosen by us and the second derivative of the smoothing function expresses the "wiggliness" of the plotted line. If the the data is overfit and the line has a lot of curves, the second derivative will be higher and the penalty higher and the opposite is also true. 
+
+The final step that we need to decide on is the choice of $\lambda$. If lambda is too high then the line will be over-smoothed (straighter) and if it is too low the line will be undersmoothed (more curved). 
+
+
+The general method to select $\lambda$ is through cross-validation. The principle of cross-validation arises from that we cannot choose a model based on its prediction performance of data it was fitted from. Instead, in cross-validation, we fit the model to a section of the data and test its prediction performance on the rest of the data. 
+
+ One example of cross-validation is called \textit{ordindary cross-validation} and involves fitting the model to all the data points in the response but one. Let $y_i$ be the left out data point and $\hat{f}^{[-i]}$ be the model fitted to all the data points except for $y_i$. Next, we calculate  the squared difference between the left out data point, $y_i$ and its prediction by fitted model $\hat{f}^{[-i]}(x_i)$.  This step is done for all the data points and the squared differences are averaged out to get the ordinary cross validation score \citep{wood2017generalized}, 
+
+$$
+\mathcal{V}_{o}=\frac{1}{n} \sum_{i=1}^{n}\left(\hat{f}_{i}^{[-i]}-y_{i}\right)^{2}.
+$$
+
+We choose $\lambda$ to minimize the average prediction error $\mathcal{V}_{o}$. More cross-validation methods can be found in \citetitle{wood2017generalized}.
+
 
 
 

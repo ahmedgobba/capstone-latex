@@ -1,13 +1,14 @@
 % Appendix A
 
-\chapter{Other Figures} % Main appendix title
+\chapter{Data Extraction} % Main appendix title
 
-\label{AppendixA} % For referencing this appendix elsewhere, use \ref{AppendixA}
+\label{AppendixA} % For referencing this appendix elsewhere, use \ref{AppendixB}
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=0.9\textwidth]{figures/GAM.pdf}
-  \caption{Results of GAM model}
-  \label{fig:GAM_All}
-\end{figure}
 
+For the patient and stay identifiers we extract SUBJECT\_ID, HADM\_ID from \texttt{ADMISSIONS} table and ICUSTAY\_ID from \texttt{ICUSTAYS} table. From the \texttt{ADMISSIONS} table we extract the time of death of the patient if applicable and if it lies between the ICU admission time and ICU discharge time in \texttt{ICUSTAYS} table we indicate ICU mortality. Similarly if the time of death is between admission time and discharge time in the  \texttt{ADMISSIONS} table, we indicate Hospital mortality. From the \texttt{Patients} table we extract the gender of the patients' and calculate their age.   
+
+For all patients and ICU stays we extract the \Fi values and their chart times from the \texttt{CHARTEVENTS} table. Keeping in mind that at normal atmospheric conditions, \Fi is around 21\%, we apply the following transformations. For the values between 0 and 1, we convert them to percentages by multiplying by a 100 and only keep those between 21\% and 100\%. Next, if the reading is recorded as greater than 1 but lower than 21,  the value is likely to be erroneous and we discard it. Next, if the value is between 21 and 100, the value is likely to already be a percentage and we take it as such. Finally, we discard all the values above a 100 that are remaining. From the same \texttt{CHARTEVENTS} table we extract the patients' height and weight. 
+
+From the \texttt{CHARTEVENTS} table, we also extract \Sp values and chart times but we only keep those which indicate 0 for ERROR which stands for error in measurement.  Moreover, we filter the values and we discard those below 10 and above a 100 since they are either physiologically impossible or unlikely. 
+
+At the end of this stage, the current dataset accounts for 46,476 Patients, 61,532 ICU Stays with 12,713,362 observations of either \Sp or \Fi or both. On further examination of the data, we find that for every \Fi measurement for a given ICU stay, for a given unique patient, there is a corresponding \Sp measurement at the same chart time but not vice versa. Accordingly, we restrict my data to only those chart times with both \Sp and \Fi measurements. This further subsets the number of observations into 703,201 observations.

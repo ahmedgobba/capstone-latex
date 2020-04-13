@@ -1,14 +1,14 @@
 % Chapter Template
 
-\chapter{Methods: How to model effect of Biomarkers on ICU mortality?} % Main chapter title
+\chapter{Methods: How to Model Effect of Biomarkers on ICU mortality?} % Main chapter title
 
 \label{Chapter3} % Change X to a consecutive number; for referencing this chapter elsewhere, use \ref{ChapterX}
 
 \section{Analysis Goal}
 
-To reiterate our goal, we first want to test for a correlation between SF ratio and patient outcome for the general ICU population and subsets of it. Next and perhaps more importantly, we want to examine over what ranges of SF ratio does significance hold if present. Therefore, we need to find a method of modelling that allows us to examine for more than mere significance of the biomarker. 
+To reiterate our goal, we first want to test for a correlation between SF ratio and patient outcome for the general ICU population and subsets of it. Next and perhaps more importantly, we want to examine over what ranges of SF ratio does significance hold if present. Therefore, we need to find a method of modelling that allows us to not only to test for the significance of the biomarker, but also discover the trend between the biomarker and patient outcome. 
 
-\section{The Problem with Generalized Linear Models: They're Linear}
+\section{The Problem with Generalized Linear Models: They are Linear}
 
 When we think of binary response variables such as mortality, we intuitively think of a linear logistic regression model. It belongs to a family of models called Generalized Linear Models (GLM). The word 'Linear' in the name does not stand for the relationship between the response variable and the predictor being a straight line, but rather to the fact that the predictor or a function of is modelled by a linear combination of the covariates. The general form of a GLM with $m$ covariates is: 
 
@@ -41,10 +41,9 @@ $$
 f(x)=\sum_{j=1}^{k} b_{j}(x) \beta_{j}
 $$
 
-where $\beta_{j}$ are unknown parameters  \citep{wood2017generalized}. There are various choices for the basis of a smoothing function and the, the choice defines how the smoothing takes place. A more in depth discussion on the choice of bases and their shortcomings can be found in \citetitle{wood2017generalized}. 
+where $\beta_{j}$ are unknown parameters  \citep{wood2017generalized}. There are various choices for the basis of a smoothing function and the choice defines how the smoothing takes place. A more in depth discussion on the choice of bases and their shortcomings can be found in \citetitle{wood2017generalized}. 
 
-The second requirement we need to specify is the degree of smoothing. We don't want to overfit or underfit the data, but adequately represent the true underlying relationship between the response variable and covariates. To do this, we add a penalty term to the 
-to the least squares fitting function. That is, instead of minimizing 
+The second requirement we need to specify is the degree of smoothing. We don't want to overfit or underfit the data, but adequately represent the true underlying relationship between the response variable and covariates. To do this, we add a penalty term to the least squares fitting function. That is, instead of minimizing 
 
 $$
 \|\mathbf{y}-\mathbf{X} \boldsymbol{\beta}\|^{2},
@@ -57,14 +56,14 @@ $$
 \|\mathbf{y}-\mathbf{X} \boldsymbol{\beta}\|^{2} + \lambda \int f''(x)^2 dx 
 $$
 
-where $\lambda$ is the smoothing parameter chosen by us and the second derivative of the smoothing function expresses the "wiggliness" of the plotted line. If the the data is overfit and the line has a lot of curves, the second derivative will be higher and the penalty higher and the opposite is also true. 
+where $\lambda$ is the smoothing parameter chosen by us and the second derivative of the smoothing function expresses the "wiggliness" of the plotted line. If the data is overfit and the line has a lot of curves, the second derivative will be higher and the penalty higher and the opposite is also true. 
 
 The final step that we need to decide on is the choice of $\lambda$. If lambda is too high then the line will be over-smoothed (straighter) and if it is too low the line will be undersmoothed (more curved). 
 
 
-The general method to select $\lambda$ is through cross-validation. The principle of cross-validation arises from that we cannot choose a model based on its prediction performance of data it was fitted from. Instead, in cross-validation, we fit the model to a section of the data and test its prediction performance on the rest of the data. 
+The general method to select $\lambda$ is through cross-validation. The principle of cross-validation arises from the fact that we cannot choose a model based on its prediction performance of data it was fitted from. Instead, in cross-validation, we fit the model to a section of the data and test its prediction performance on the rest of the data. 
 
- One example of cross-validation is called \textit{ordindary cross-validation} and involves fitting the model to all the data points in the response but one. Let $y_i$ be the left out data point and $\hat{f}^{[-i]}$ be the model fitted to all the data points except for $y_i$. Next, we calculate  the squared difference between the left out data point, $y_i$ and its prediction by fitted model $\hat{f}^{[-i]}(x_i)$.  This step is done for all the data points and the squared differences are averaged out to get the ordinary cross validation score \citep{wood2017generalized}, 
+ One example of cross-validation is called \textit{ordinary cross-validation} and involves fitting the model to all the data points in the response but one. Let $y_i$ be the left out data point and $\hat{f}^{[-i]}$ be the model fitted to all the data points except for $y_i$. Next, we calculate  the squared difference between the left out data point, $y_i$ and its prediction by fitted model $\hat{f}^{[-i]}(x_i)$.  This step is done for all the data points, and the squared differences are averaged out to get the ordinary cross validation score \citep{wood2017generalized}, 
 
 $$
 \mathcal{V}_{o}=\frac{1}{n} \sum_{i=1}^{n}\left(\hat{f}_{i}^{[-i]}-y_{i}\right)^{2}.
